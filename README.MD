@@ -223,3 +223,11 @@ velozity-dashboard/
 │       └── main.tsx
 │
 └── README.md
+Frontend:
+https://velozity-dashboard-frontend.vercel.app
+
+Backend:
+https://velozity-dashboard-api-1hom.onrender.com
+
+Health:
+https://velozity-dashboard-api-1hom.onrender.com/api/health
