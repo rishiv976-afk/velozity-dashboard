@@ -9,12 +9,38 @@ import {
   verifyRefreshToken,
 } from "../utils/tokens";
 
+const isProduction =
+  process.env.NODE_ENV === "production";
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction
+    ? ("none" as const)
+    : ("lax" as const),
+  maxAge:
+    7 *
+    24 *
+    60 *
+    60 *
+    1000,
+};
+
+const refreshCookieClearOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction
+    ? ("none" as const)
+    : ("lax" as const),
+};
+
 export const login = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } =
+      req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -76,19 +102,7 @@ export const login = async (
     res.cookie(
       "refreshToken",
       refreshToken,
-      {
-        httpOnly: true,
-        secure:
-          process.env.NODE_ENV ===
-          "production",
-        sameSite: "lax",
-        maxAge:
-          7 *
-          24 *
-          60 *
-          60 *
-          1000,
-      }
+      refreshCookieOptions
     );
 
     return res.status(200).json({
@@ -132,7 +146,8 @@ export const refresh = async (
       return res.status(401).json({
         success: false,
         error: {
-          code: "REFRESH_TOKEN_REQUIRED",
+          code:
+            "REFRESH_TOKEN_REQUIRED",
           message:
             "Refresh token required",
         },
@@ -155,7 +170,8 @@ export const refresh = async (
       return res.status(401).json({
         success: false,
         error: {
-          code: "INVALID_REFRESH_TOKEN",
+          code:
+            "INVALID_REFRESH_TOKEN",
           message:
             "Invalid refresh token",
         },
@@ -185,7 +201,8 @@ export const refresh = async (
     return res.status(401).json({
       success: false,
       error: {
-        code: "INVALID_REFRESH_TOKEN",
+        code:
+          "INVALID_REFRESH_TOKEN",
         message:
           "Invalid or expired refresh token",
       },
@@ -199,13 +216,7 @@ export const logout = async (
 ) => {
   res.clearCookie(
     "refreshToken",
-    {
-      httpOnly: true,
-      secure:
-        process.env.NODE_ENV ===
-        "production",
-      sameSite: "lax",
-    }
+    refreshCookieClearOptions
   );
 
   return res.status(200).json({
